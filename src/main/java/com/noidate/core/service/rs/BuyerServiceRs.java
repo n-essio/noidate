@@ -2,6 +2,7 @@ package com.noidate.core.service.rs;
 
 import com.noidate.api.service.RsRepositoryServiceV4;
 import com.noidate.core.model.Buyer;
+import com.noidate.core.model.enums.BuyerType;
 import jakarta.inject.Singleton;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -50,6 +51,10 @@ public class BuyerServiceRs extends RsRepositoryServiceV4<Buyer, String> {
         }
         if (nn("to.creation_date")) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("creation_date"), _localDate("to.creation_date")));
+        }
+        if (nn("obj.buyerType")) {
+            predicates.add(criteriaBuilder.equal(root.get("buyerType"),
+                    BuyerType.valueOf(get("obj.buyerType"))));
         }
         if (nn("obj.uuid")) {
             predicates.add(criteriaBuilder.equal(root.get("uuid"), get("obj.uuid")));

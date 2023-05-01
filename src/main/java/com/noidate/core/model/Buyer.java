@@ -1,5 +1,6 @@
 package com.noidate.core.model;
 
+import com.noidate.core.model.enums.BuyerType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import it.ness.queryable.annotations.Q;
 import it.ness.queryable.annotations.QLike;
@@ -36,6 +37,9 @@ public class Buyer extends PanacheEntityBase {
     public LocalDateTime creation_date;
     @QLogicalDelete
     public boolean active;
+
+    @Enumerated(EnumType.STRING)
+    public BuyerType buyerType;
 
     @Override
     public String toString() {
