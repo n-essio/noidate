@@ -6,6 +6,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 
 idea:
+- https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#criteria
 - https://www.baeldung.com/hibernate-criteria-queries
 - https://www.baeldung.com/jpa-and-or-criteria-predicates
 - https://www.baeldung.com/jpql-hql-criteria-query
