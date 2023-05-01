@@ -6,17 +6,17 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
-import jakarta.ws.rs.*;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.noidate.core.management.AppConstants.BUYERS_PATH;
+import static com.noidate.core.management.AppConstants.TEST_PATH;
 
-@Path(BUYERS_PATH)
+@Path(TEST_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
