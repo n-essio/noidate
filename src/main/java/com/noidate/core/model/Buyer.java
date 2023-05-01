@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import it.ness.queryable.annotations.Q;
 import it.ness.queryable.annotations.QLike;
 import it.ness.queryable.annotations.QList;
+import it.ness.queryable.annotations.QLogicalDelete;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -33,6 +34,8 @@ public class Buyer extends PanacheEntityBase {
     public String province;
     @Q
     public LocalDateTime creation_date;
+    @QLogicalDelete
+    public boolean active;
 
     @Override
     public String toString() {
@@ -44,6 +47,8 @@ public class Buyer extends PanacheEntityBase {
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", province='" + province + '\'' +
+                ", creation_date=" + creation_date +
+                ", active=" + active +
                 '}';
     }
 }

@@ -35,6 +35,9 @@ public class BuyerServiceRs extends RsRepositoryServiceV4<Buyer, String> {
     @Override
     public Predicate[] query(CriteriaBuilder criteriaBuilder, Root<Buyer> root) {
         var predicates = new ArrayList<Predicate>();
+        if (true) {
+            predicates.add(criteriaBuilder.equal(root.get("active"), true));
+        }
         if (nn("obj.uuids")) {
             CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("uuid"));
             for (String uuid : asList("obj.uuids")) {
