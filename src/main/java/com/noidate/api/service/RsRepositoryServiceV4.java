@@ -17,6 +17,7 @@ import jakarta.ws.rs.core.UriInfo;
 import org.jboss.logging.Logger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> extends RsResponseService implements
@@ -125,20 +126,21 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
         return object;
     }
 
-    protected abstract CriteriaBuilder criteriaBuilder();
-//    {
-//        return getEntityManager().getCriteriaBuilder();
-//    }
+    protected CriteriaBuilder criteriaBuilder() {
+        return getEntityManager().getCriteriaBuilder();
+    }
 
-    protected abstract CriteriaQuery<T> criteriaQuery(CriteriaBuilder criteriaBuilder);
-//    {
-//        return criteriaBuilder().createQuery(getEntityClass());
-//    }
+    protected CriteriaQuery<Long> createCountQuery() {
+        return criteriaBuilder().createQuery(Long.class);
+    }
 
-    protected abstract Root<T> root(CriteriaQuery<T> criteriaQuery);
-//    {
-//        return criteriaQuery().from(getEntityClass());
-//    }
+    protected CriteriaQuery<T> createQuery() {
+        return criteriaBuilder().createQuery(getEntityClass());
+    }
+
+    protected Root<T> root(CriteriaQuery criteriaQuery) {
+        return criteriaQuery.from(getEntityClass());
+    }
 
 
     @PUT
@@ -241,9 +243,14 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
     public Response getListSize(@Context UriInfo ui) {
         logger.info("getListSize");
         try {
-            CriteriaQuery<Long> cql = criteriaBuilder().createQuery(Long.class);
-            cql.select(criteriaBuilder().count(cql.from(getEntityClass()))).where(query());
-            Long listSize = entityManager.createQuery(cql).getSingleResult();
+            var ccq = createCountQuery();
+            Root<T> rootl = root(ccq);
+            Predicate[] predicates = query(criteriaBuilder(), rootl);
+            ccq.select(criteriaBuilder().count(rootl));
+            if (predicates != null && predicates.length > 0) {
+                ccq.where(predicates);
+            }
+            Long listSize = getEntityManager().createQuery(ccq).getSingleResult();
             return Response.status(Status.OK).entity(listSize)
                     .header("Access-Control-Expose-Headers", "listSize")
                     .header("listSize", listSize).build();
@@ -262,32 +269,32 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
 
         logger.info("getList");
         try {
-            Predicate[] predicates = query();
-            var cb = criteriaBuilder();
-            var cq = criteriaQuery(cb);
-            var root = root(cq);
-            CriteriaQuery<Long> cql = cb.createQuery(Long.class);
-            cql.select(cb.count(cql.from(getEntityClass())));
-//            if (predicates != null && predicates.length > 0) {
-//                cql.where(predicates);
-//            }
-            Long listSize = entityManager.createQuery(cql).getSingleResult();
-            cq.select(root(cq));
+            var ccq = createCountQuery();
+            Root<T> rootl = root(ccq);
+            Predicate[] predicates = query(criteriaBuilder(), rootl);
+            ccq.select(criteriaBuilder().count(rootl));
             if (predicates != null && predicates.length > 0) {
-                cq.where(criteriaBuilder().like(root(cq).get("surname"), likeParam("like.surname")));
+                ccq.where(predicates);
+            }
+            Long listSize = getEntityManager().createQuery(ccq).getSingleResult();
+
+            var cq = createQuery();
+            Root<T> root = root(cq);
+            predicates = query(criteriaBuilder(), root);
+            if (predicates != null && predicates.length > 0) {
+                cq.where(predicates);
             }
             Order[] orders = sort(orderBy, root);
             if (orders != null && orders.length > 0) {
-                cq.orderBy();
+                cq.orderBy(orders);
             }
-            var query = entityManager.createQuery(cq);
-            List<T> list = query
-                    .setFirstResult(startRow)
-                    .setMaxResults(pageSize)
-                    .getResultList();
-            postList(list);
+            List<T> list = getEntityManager().createQuery(cq).getResultList();
+            if (list == null) {
+                list = new ArrayList<>();
+            }
+
             return Response
-                    .status(Status.OK)
+                    .status(Response.Status.OK)
                     .entity(list)
                     .header("Access-Control-Expose-Headers", "startRow, pageSize, listSize")
                     .header("startRow", startRow)
@@ -332,7 +339,7 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
 
     protected abstract String getDefaultOrderBy();
 
-    public abstract Predicate[] query() throws Exception;
+    public abstract Predicate[] query(CriteriaBuilder criteriaBuilder, Root<T> root) throws Exception;
 
     protected Order[] sort(String orderBy, Root<T> root) throws Exception {
         List<Order> orders = null;

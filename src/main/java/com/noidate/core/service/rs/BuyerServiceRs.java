@@ -24,34 +24,29 @@ public class BuyerServiceRs extends RsRepositoryServiceV4<Buyer, String> {
         super(Buyer.class);
     }
 
-    @Override
-    protected CriteriaBuilder criteriaBuilder() {
-        return getEntityManager().getCriteriaBuilder();
-    }
-
-    @Override
-    protected CriteriaQuery<Buyer> criteriaQuery(CriteriaBuilder criteriaBuilder) {
-        return criteriaBuilder.createQuery(Buyer.class);
-    }
-
-    @Override
-    protected Root<Buyer> root(CriteriaQuery<Buyer> criteriaQuery) {
-        return criteriaQuery.from(Buyer.class);
-    }
 
     @Override
     protected String getDefaultOrderBy() {
         return "surname asc";
     }
 
+
     @Override
-    public Predicate[] query() throws Exception {
-        return new Predicate[0];
-    }
-
-
     public Predicate[] query(CriteriaBuilder criteriaBuilder, Root<Buyer> root) {
         var predicates = new ArrayList<Predicate>();
+        if (nn("obj.uuids")) {
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("uuid"));
+            for (String uuid : asList("obj.uuids")) {
+                inClause.value(uuid);
+            }
+            predicates.add(inClause);
+        }
+        if (nn("from.creation_date")) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("creation_date"), _localDate("from.creation_date")));
+        }
+        if (nn("to.creation_date")) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("creation_date"), _localDate("to.creation_date")));
+        }
         if (nn("obj.uuid")) {
             predicates.add(criteriaBuilder.equal(root.get("uuid"), get("obj.uuid")));
         }
@@ -79,19 +74,19 @@ public class BuyerServiceRs extends RsRepositoryServiceV4<Buyer, String> {
                          @DefaultValue("10") @QueryParam("pageSize") Integer pageSize,
                          @QueryParam("orderBy") String orderBy) throws Exception {
         CriteriaBuilder cbl = criteriaBuilder();
+
         CriteriaQuery<Long> cql = cbl.createQuery(Long.class);
         Root<Buyer> rootl = cql.from(Buyer.class);
         Predicate[] predicates = query(cbl, rootl);
-        cql.select(cbl.count(cql.from(getEntityClass())));
+        cql.select(cbl.count(rootl));
         if (predicates != null && predicates.length > 0) {
             cql.where(predicates);
         }
         Long listSize = getEntityManager().createQuery(cql).getSingleResult();
 
-        CriteriaBuilder cb = criteriaBuilder();
-        CriteriaQuery<Buyer> cq = cb.createQuery(Buyer.class);
+        CriteriaQuery<Buyer> cq = cbl.createQuery(Buyer.class);
         Root<Buyer> root = cq.from(Buyer.class);
-        predicates = query(cb, root);
+        predicates = query(cbl, root);
         if (predicates != null && predicates.length > 0) {
             cq.where(predicates);
         }

@@ -1,5 +1,6 @@
 package com.noidate.core.service.rs;
 
+import com.noidate.api.service.RsRepositoryServiceV4;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
@@ -7,6 +8,9 @@ import com.noidate.api.service.RsRepositoryServiceV3;
 import com.noidate.core.model.ServiceRequest;
 
 import jakarta.inject.Singleton;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -18,7 +22,7 @@ import static com.noidate.core.management.AppConstants.SERVICE_REQUESTS_PATH;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
-public class ServiceRequestServiceRs extends RsRepositoryServiceV3<ServiceRequest, String> {
+public class ServiceRequestServiceRs extends RsRepositoryServiceV4<ServiceRequest, String> {
 
 	public ServiceRequestServiceRs() {
 		super(ServiceRequest.class);
@@ -30,14 +34,9 @@ public class ServiceRequestServiceRs extends RsRepositoryServiceV3<ServiceReques
 	}
 
 	@Override
-	public PanacheQuery<ServiceRequest> getSearch(String orderBy) throws Exception {
-		PanacheQuery<ServiceRequest> search;
-		Sort sort = sort(orderBy);
-		if (sort != null) {
-			search = ServiceRequest.find(null, sort);
-		} else {
-			search = ServiceRequest.find(null);
-		}
-		return search;
+	public Predicate[] query(CriteriaBuilder criteriaBuilder, Root<ServiceRequest> root) throws Exception {
+		return new Predicate[0];
 	}
+
+
 }

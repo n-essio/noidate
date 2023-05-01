@@ -9,3 +9,4 @@ idea:
 - https://www.baeldung.com/hibernate-criteria-queries
 - https://www.baeldung.com/jpa-and-or-criteria-predicates
 - https://www.baeldung.com/jpql-hql-criteria-query
+- https://www.baeldung.com/jpa-criteria-api-in-expressions

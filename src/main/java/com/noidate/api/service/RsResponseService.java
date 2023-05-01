@@ -10,6 +10,9 @@ import jakarta.ws.rs.core.UriInfo;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +128,30 @@ public abstract class RsResponseService implements Serializable {
     public Boolean _boolean(String key) {
         String value = ui.getQueryParameters().getFirst(key);
         return Boolean.valueOf(value);
+    }
+
+    public LocalDate _localDate(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return LocalDate.parse(value, formatter);
+    }
+
+    public LocalDate _localDate(String key, String pattern) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return LocalDate.parse(value, formatter);
+    }
+
+    public LocalDateTime _localDateTime(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'hh:mm:ss");
+        return LocalDateTime.parse(value, formatter);
+    }
+
+    public LocalDateTime _localDateTime(String key, String pattern) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return LocalDateTime.parse(value, formatter);
     }
 
     protected final String likeParamToLowerCase(String value) {
