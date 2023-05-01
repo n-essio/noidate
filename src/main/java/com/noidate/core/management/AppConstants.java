@@ -13,5 +13,6 @@ public class AppConstants {
     public static final String SERVICE_CATEGORIES_PATH = API_PATH + "/servicecategories";
     public static final String SERVICE_REQUESTS_PATH = API_PATH + "/servicerequests";
     public static final String VENDORS_PATH = API_PATH + "/vendors";
+    public static final String TEST_PATH = API_PATH + "/test";
 
 }
